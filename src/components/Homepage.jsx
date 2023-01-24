@@ -2,16 +2,19 @@ import React from 'react'
 import { Navigate, useNavigate } from 'react-router-dom';
 import Web3 from 'web3';
 import {UserContext} from '../App';
+import EliteContract from '../EliteContract.json';
 
 export default function Homepage() {
     const[account,setAccount]=React.useState('');
     const{value1}=React.useContext(UserContext);
     const[pass,setPass]=value1;
+    const [contract,setcontract]=React.useState()
     const navigate=useNavigate();
 
     const loadFunction=async()=>{
         if(typeof window.ethereum!=='undefined'){
           const web3= new Web3(window.ethereum);
+        //   setweb3(web3);
           window.ethereum.enable().catch(error=>{
             console.log(error);
             alert("please login with MetaMask");
@@ -21,13 +24,25 @@ export default function Homepage() {
           // const accountBalance= await web3.eth.getBalance(accounts[0]);
           // const etherAmount= web3.utils.fromWei(accountBalance,'ether');
           setAccount(accounts[0]);
+          const Elite= new web3.eth.Contract(EliteContract.abi,'0x153f4A026373dC47699ae6273c415F68dC438dFf')
+          setcontract(Elite);
         }else{
           alert("MetaMask Not Found!!!")
         }
       }
 
-     const verifyPass=()=>{
-        navigate('/Dashboard');
+     const verifyPass=async()=>{
+        const res=await contract.methods.hasElitePass(account).call();
+        if(res){
+          setPass(true);
+          navigate('/Dashboard');
+        }else{
+          setPass(false)
+          navigate('/Dashboard');
+        }
+     }
+     const mintElite=async()=>{
+      await contract.methods.mintPass().send({from:account})
      }
   return (
     <div>
@@ -38,7 +53,7 @@ export default function Homepage() {
         {
             account!=="" &&
             <div>
-                <button>Get Elite NFT</button>
+                <button onClick={mintElite}>Get Elite NFT</button>
                 <p  onClick={verifyPass} className='dashboardlink'>Go to DashBoard</p>
             </div>
         }
