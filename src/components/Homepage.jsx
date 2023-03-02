@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import Web3 from 'web3';
 import {UserContext} from '../App';
 import EliteContract from '../EliteContract.json';
+import '../App.css';
 
 export default function Homepage() {
     const[account,setAccount]=React.useState('');
@@ -45,15 +46,15 @@ export default function Homepage() {
       await contract.methods.mintPass().send({from:account})
      }
   return (
-    <div>
+    <div className='parent'>
         {
-            account==="" &&<button onClick={loadFunction}>Connect Wallet</button>
+            account==="" &&<button className="ConnectBtn" onClick={loadFunction}>Connect Wallet</button>
         
         }
         {
             account!=="" &&
             <div>
-                <button onClick={mintElite}>Get Elite NFT</button>
+                <button onClick={mintElite} className="ConnectBtn">Get Elite NFT</button>
                 <p  onClick={verifyPass} className='dashboardlink'>Go to DashBoard</p>
             </div>
         }
